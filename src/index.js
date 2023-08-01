@@ -238,64 +238,187 @@ window.contacts = [
   },
 ];
 
+// ... (Existing code)
+
 ///////////////////////////////////
 // WRITE YOUR SOLUTION CODE HERE //
 ///////////////////////////////////
 
-/*
- Create and return the HTML to render a single contact card.
- The `contact` parameter is an object representing a single contact. 
-*/
-function renderContact(contact) {}
+function renderContact(contact) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.setAttribute("data-id", contact.id);
 
-/*
-  Render the array of contacts and insert them on the DOM.
-  The contacts should be rendered in the `section` with id "contacts".
-*/
-function render(contacts) {}
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "deleteBtn";
+  deleteBtn.setAttribute("title", "Delete this contact");
+  deleteBtn.textContent = "X";
+  card.appendChild(deleteBtn);
 
-/*
-  Filter by city. Filter the  array of contacts by the given city.
-  Return a new array containing the filtered list. 
-  Do NOT modify the original array.
-*/
-function filterByCity(city) {}
+  const avatarDiv = document.createElement("div");
+  avatarDiv.className = "avatar";
 
-/*
-  Add an `change` event listener to the `filterOptions` select element.
-  On `change` get the value selected by the user. 
-  If the value is "0" call `render()` with the complete contacts list.
-  If the value is not "0" call `filterByCity()` passing the value selected by
-  the user. Then call `render()` with the filtered list.
-*/
-function filterHandler() {}
+  const avatarCircle1 = document.createElement("div");
+  avatarCircle1.className = "circle";
+  avatarDiv.appendChild(avatarCircle1);
 
-/*
-  Accepts an array of contacts.
-  Populate the select with id `filterOptions` with the list of cities.
-  Create a list of cities from the contacts array with no duplicates then
-  add an `<option>` element for each city to the select.
-*/
-function loadCities(contacts) {}
+  const avatarCircle2 = document.createElement("div");
+  avatarCircle2.className = "circle";
+  avatarDiv.appendChild(avatarCircle2);
 
-/*
-  Remove the contact from the contact list with the given id.
-*/
-function deleteContact(id) {}
+  const avatarImg = document.createElement("img");
+  avatarImg.src = contact.picture;
+  avatarDiv.appendChild(avatarImg);
 
-/*
-  Add a `click` event handler to the `deleteBtn` elements.
-  When clicked, get the id of the card that was clicked from the 
-  corresponding `data-id` then call `deleteContact()` and re-render 
-  the list.
-*/
-function deleteButtonHandler() {}
+  card.appendChild(avatarDiv);
 
-/*
-  Perform all startup tasks here. Use this function to attach the 
-  required event listeners, call loadCities() then call render().
-*/
-function main() {}
+  const infoDiv = document.createElement("div");
+  infoDiv.className = "info";
+
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "name big";
+  nameSpan.textContent = contact.name;
+  infoDiv.appendChild(nameSpan);
+
+  const emailSpan = document.createElement("span");
+  emailSpan.className = "email small";
+  emailSpan.textContent = contact.email;
+  infoDiv.appendChild(emailSpan);
+
+  card.appendChild(infoDiv);
+
+  const detailsDiv = document.createElement("div");
+  detailsDiv.className = "details";
+
+  const phoneDiv = document.createElement("div");
+  phoneDiv.className = "phone";
+  phoneDiv.textContent = contact.phone;
+  detailsDiv.appendChild(phoneDiv);
+
+  const websiteDiv = document.createElement("div");
+  websiteDiv.className = "website";
+  websiteDiv.textContent = contact.website;
+  detailsDiv.appendChild(websiteDiv);
+
+  card.appendChild(detailsDiv);
+
+  const additionalDiv = document.createElement("div");
+  additionalDiv.className = "additional";
+
+  const addressDiv = document.createElement("div");
+  addressDiv.className = "address";
+
+  const suiteDiv = document.createElement("div");
+  suiteDiv.className = "suite";
+  suiteDiv.textContent = contact.address.suite;
+  addressDiv.appendChild(suiteDiv);
+
+  const streetDiv = document.createElement("div");
+  streetDiv.className = "street";
+  streetDiv.textContent = contact.address.street;
+  addressDiv.appendChild(streetDiv);
+
+  const cityDiv = document.createElement("div");
+  cityDiv.className = "city";
+  cityDiv.textContent = `${contact.address.city}, ${contact.address.zipcode}`;
+  addressDiv.appendChild(cityDiv);
+
+  additionalDiv.appendChild(addressDiv);
+
+  const companyDiv = document.createElement("div");
+  companyDiv.className = "company";
+
+  const companyLabelDiv = document.createElement("div");
+  companyLabelDiv.className = "label";
+  companyLabelDiv.textContent = "Works at";
+  companyDiv.appendChild(companyLabelDiv);
+
+  const companyNameDiv = document.createElement("div");
+  companyNameDiv.className = "company-name";
+  companyNameDiv.textContent = contact.company.name;
+  companyDiv.appendChild(companyNameDiv);
+
+  additionalDiv.appendChild(companyDiv);
+
+  card.appendChild(additionalDiv);
+
+  return card;
+}
+
+function loadCities(contacts) {
+  const filterOptions = document.getElementById("filterOptions");
+
+  // Clear previous options
+  filterOptions.innerHTML = "";
+
+  // Create default option
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "0";
+  defaultOption.textContent = "-- Select a city --";
+  filterOptions.appendChild(defaultOption);
+
+  const citiesSet = new Set();
+  contacts.forEach((contact) => citiesSet.add(contact.address.city));
+
+  citiesSet.forEach((city) => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    filterOptions.appendChild(option);
+  });
+}
+
+function render(contacts) {
+  const contactsSection = document.getElementById("contacts");
+  contactsSection.innerHTML = "";
+
+  contacts.forEach((contact) => {
+    const contactCard = renderContact(contact);
+    contactsSection.appendChild(contactCard);
+  });
+}
+
+function filterByCity(city) {
+  return window.contacts.filter((contact) => contact.address.city === city);
+}
+
+function filterHandler() {
+  const filterOptions = document.getElementById("filterOptions");
+  const selectedCity = filterOptions.value;
+
+  if (selectedCity === "0") {
+    render(window.contacts);
+  } else {
+    const filteredContacts = filterByCity(selectedCity);
+    render(filteredContacts);
+  }
+}
+
+function deleteContact(id) {
+  window.contacts = window.contacts.filter((contact) => contact.id !== id);
+}
+
+function deleteButtonHandler() {
+  const deleteButtons = document.querySelectorAll(".deleteBtn");
+
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const card = event.target.closest(".card");
+      const contactId = parseInt(card.getAttribute("data-id"));
+      deleteContact(contactId);
+      render(window.contacts);
+    });
+  });
+}
+
+function main() {
+  const filterOptions = document.getElementById("filterOptions");
+  filterOptions.addEventListener("change", filterHandler);
+
+  loadCities(window.contacts);
+  render(window.contacts);
+  deleteButtonHandler();
+}
 
 window.addEventListener("DOMContentLoaded", main);
 
